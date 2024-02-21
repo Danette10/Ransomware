@@ -1,1 +1,1 @@
-Crypto
+pycryptodome~=3.20.0
