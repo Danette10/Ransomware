@@ -6,7 +6,7 @@ from Crypto.Hash import SHA256
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
 
-dir_demo = "./Demo"
+dir_demo = "./Demo"  # Ce chemin fonctionnera correctement sous Windows et les autres OS
 
 
 def generate_key(password, salt=None):
@@ -27,7 +27,8 @@ def encrypt_decrypt_directory(action, directory, password):
                     with open(file_path, "rb") as f:
                         data = f.read()
                     ciphertext, tag = cipher.encrypt_and_digest(data)
-                    with open(file_path + ".enc", "wb") as f:
+                    encrypted_file_path = file_path + ".enc"
+                    with open(encrypted_file_path, "wb") as f:
                         f.write(salt + cipher.nonce + tag + ciphertext)
                     os.remove(file_path)
                 elif action == "decrypt":
@@ -36,7 +37,8 @@ def encrypt_decrypt_directory(action, directory, password):
                     key, _ = generate_key(password, salt)
                     cipher = AES.new(key, AES.MODE_EAX, nonce)
                     data = cipher.decrypt_and_verify(ciphertext, tag)
-                    with open(file_path[:-4], "wb") as f:
+                    decrypted_file_path = file_path[:-4]  # Supprime l'extension .enc pour le nom du fichier déchiffré
+                    with open(decrypted_file_path, "wb") as f:
                         f.write(data)
                     os.remove(file_path)
             except PermissionError:
